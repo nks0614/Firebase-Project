@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
+                        .setTheme(R.style.GreenTheme)
                         .build(),
                 RC_SIGN_IN)
     }
