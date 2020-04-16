@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -18,20 +19,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
+        checkLogin()
+
+    }
+
+    private fun checkLogin(){
+        val user = FirebaseAuth.getInstance().currentUser
+        if(user == null) showLoginWindow()
+        else gotoWeatherActivity()
+    }
+
+    private fun gotoWeatherActivity(){
+        startActivity(Intent(this,WeatherActivity::class.java))
+    }
+
+    private fun showLoginWindow(){
         // Choose authentication providers
         val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build())
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build())
 
         // Create and launch sign-in intent
         startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setTheme(R.style.GreenTheme)
-                        .setLogo(R.drawable.danny_black_transparency)
-                        .build(),
-                RC_SIGN_IN)
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.GreenTheme)
+                .setLogo(R.drawable.danny_black_transparency)
+                .build(),
+            RC_SIGN_IN)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -43,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                // ...
+                gotoWeatherActivity()
             } else {
                 Toast.makeText(this,"로그인 실패, 다시 로그인을 하십시오",Toast.LENGTH_LONG ).show()
             }
