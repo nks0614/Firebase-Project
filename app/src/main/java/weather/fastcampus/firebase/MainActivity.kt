@@ -26,12 +26,11 @@ class MainActivity : AppCompatActivity() {
     private fun checkLogin(){
         val user = FirebaseAuth.getInstance().currentUser
         if(user == null) showLoginWindow()
-        else gotoWeatherActivity()
+        else {
+            startActivity(WeatherActivity::class.java)
+        }
     }
 
-    private fun gotoWeatherActivity(){
-        startActivity(Intent(this,WeatherActivity::class.java))
-    }
 
     private fun showLoginWindow(){
         // Choose authentication providers
@@ -59,9 +58,9 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                gotoWeatherActivity()
+                startActivity(WeatherActivity::class.java)
             } else {
-                Toast.makeText(this,"로그인 실패, 다시 로그인을 하십시오",Toast.LENGTH_LONG ).show()
+                simpleToastShort("Login Error!", this)
             }
         }
     }
