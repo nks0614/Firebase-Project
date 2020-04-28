@@ -18,30 +18,27 @@ class WeatherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
 
-        setUpRetrofit()
+
 
         setting.setOnClickListener {
             startActivity(AccountSettingActivity::class.java)
+            requestWeather()
         }
     }
 
-
-    private fun setUpRetrofit(){
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(Service::class.java)
-        service.getWeatherInfoOfLocation("London", "09c8dfc52b7541d33c528d09a55e2c18")
-            .enqueue(object : Callback<JsonObject>{
+    private fun requestWeather(){
+        (application as WeatherApplication)
+            .requestService()
+            ?.getWeatherInfoOfLocation("London", "09c8dfc52b7541d33c528d09a55e2c18")
+            ?.enqueue(object : Callback<JsonObject>{
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
 
                 }
 
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    Log.d("abc", "response : "+response.body())
+                    Log.d("request","요청 결과 : "+response.body())
                 }
             })
     }
+
 }
