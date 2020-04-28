@@ -12,6 +12,6 @@ interface Service {
     fun getWeatherInfoOfLocation(
         @Query("q") location : String,
         @Query("APPID") appID : String
-    ): Call<JsonObject>
+    ): Call<TotalWeather>
 
 }
