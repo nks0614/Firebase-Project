@@ -14,4 +14,12 @@ interface Service {
         @Query("APPID") appID : String
     ): Call<TotalWeather>
 
+    @GET("data/2.5/weather/")
+    fun getweatherInfoOfCoordinates(
+        @Query("lat") lat : Double,
+        @Query("lon") lon : Double,
+        @Query("APPID") appID : String,
+        @Query("units") units : String
+    ):Call<TotalWeather>
+
 }

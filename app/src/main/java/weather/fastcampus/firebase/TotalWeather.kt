@@ -18,7 +18,7 @@ class Weather(
 class Main(
     var humidity : Int? = null,
     var pressure : Int? = null,
-    var temp : Double? = null,
-    var temp_max : Double? = null,
-    var temp_min : Double? = null
+    var temp : Float? = null,
+    var temp_max : Float? = null,
+    var temp_min : Float? = null
 ):Serializable
