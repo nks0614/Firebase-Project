@@ -49,18 +49,21 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
                 PERMISSION_REQUEST_CODE) //위치권한에 동의할 것인지 물어라
 
         } else {
-
+            Log.d("else", "elseelse")
             val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
             if(location != null) {
+                Log.d("loc", "location : $location")
                 val latitude = location.latitude
                 val longitude = location.longitude
                 requestWeatherInfoOfLocation(latitude, longitude)
                 Log.d("please", "lat : $latitude log : $longitude")
             } else {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    0L,
+                Log.d("else", "else속의 else")
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    3000L,
                     0F,
                     this )
                 locationManager.removeUpdates(this)
@@ -82,6 +85,7 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     //Location 메소드들
 
     override fun onLocationChanged(location: Location?) {
+        Log.d("locationchange", "location이 바귐")
         val lat = location?.latitude
         val lon = location?.longitude
         if(lat != null && lon != null){
