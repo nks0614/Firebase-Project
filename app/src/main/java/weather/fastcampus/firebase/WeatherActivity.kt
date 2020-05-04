@@ -31,11 +31,25 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
 
+        getLocationInfo()
 
-        setting.setOnClickListener {
-            startActivity(AccountSettingActivity::class.java)
-            //requestWeather()
-            getLocationInfo()
+        setting.setOnClickListener { startActivity(AccountSettingActivity::class.java) }
+    }
+
+    private fun drawWeather(weather : TotalWeather){
+        with(weather){
+            this.main?.temp_max?.let{current_max.text = it.toString()}
+            this.main?.temp?.let{current_temp.text = it.toString()}
+            this.main?.temp_min?.let{current_min.text = it.toString()}
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == PERMISSION_REQUEST_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                getLocationInfo()
+            }
         }
     }
 
@@ -49,18 +63,15 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
                 PERMISSION_REQUEST_CODE) //위치권한에 동의할 것인지 물어라
 
         } else {
-            Log.d("else", "elseelse")
             val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
             if(location != null) {
-                Log.d("loc", "location : $location")
                 val latitude = location.latitude
                 val longitude = location.longitude
                 requestWeatherInfoOfLocation(latitude, longitude)
                 Log.d("please", "lat : $latitude log : $longitude")
             } else {
-                Log.d("else", "else속의 else")
                 locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
                     3000L,
@@ -72,20 +83,9 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     }
 
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == PERMISSION_REQUEST_CODE){
-            if(resultCode == Activity.RESULT_OK){
-                getLocationInfo()
-            }
-        }
-    }
-
     //Location 메소드들
 
     override fun onLocationChanged(location: Location?) {
-        Log.d("locationchange", "location이 바귐")
         val lat = location?.latitude
         val lon = location?.longitude
         if(lat != null && lon != null){
@@ -119,26 +119,12 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
 
                     if(response.isSuccessful){
                         val totalWeather = response.body()
-                        Log.d("tttt", "weather : ${totalWeather?.main?.temp}")
+                        totalWeather?.let {
+                            drawWeather(it)
+                        }
+
                     }
 
-                }
-            })
-    }
-
-
-    private fun requestWeather(){
-        (application as WeatherApplication)
-            .requestService()
-            ?.getWeatherInfoOfLocation("London", APP_ID)
-            ?.enqueue(object : Callback<TotalWeather>{
-                override fun onFailure(call: Call<TotalWeather>, t: Throwable) {
-
-                }
-
-                override fun onResponse(call: Call<TotalWeather>, response: Response<TotalWeather>) {
-                    val totalWeather = response.body()
-                    Log.d("test", "main : "+totalWeather?.main?.temp)
                 }
             })
     }

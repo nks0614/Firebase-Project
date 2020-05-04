@@ -21,5 +21,4 @@ interface Service {
         @Query("APPID") appID : String,
         @Query("units") units : String
     ):Call<TotalWeather>
-
 }
