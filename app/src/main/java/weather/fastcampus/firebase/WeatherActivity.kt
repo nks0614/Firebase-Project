@@ -7,12 +7,14 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_weather.*
 import retrofit2.Call
@@ -36,9 +38,19 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
         setting.setOnClickListener { startActivity(AccountSettingActivity::class.java) }
     }
 
+    //날씨 정보를 xml로 옮기는 함수
     private fun drawWeather(weather : TotalWeather){
         Log.d("checkk", "start drawWeather method")
         with(weather){
+
+
+            //http://openweathermap.org/img/w/10d.png
+
+            this.weatherList?.getOrNull(0)?.let {
+                val glide = Glide.with(this@WeatherActivity)
+                glide.load(Uri.parse("http://openweathermap.org/img/w/${it.icon}.png")).into(current_weather)
+            }
+
             this.main?.temp_max?.let{current_max.text = it.toString()}
             this.main?.temp?.let{current_temp.text = it.toString()}
             this.main?.temp_min?.let{current_min.text = it.toString()}
