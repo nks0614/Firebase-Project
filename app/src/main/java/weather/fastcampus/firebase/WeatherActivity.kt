@@ -30,13 +30,14 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
-
+        Log.d("checkk", "Activity Start")
         getLocationInfo()
 
         setting.setOnClickListener { startActivity(AccountSettingActivity::class.java) }
     }
 
     private fun drawWeather(weather : TotalWeather){
+        Log.d("checkk", "start drawWeather method")
         with(weather){
             this.main?.temp_max?.let{current_max.text = it.toString()}
             this.main?.temp?.let{current_temp.text = it.toString()}
@@ -56,43 +57,49 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     //위치 받아오는 함수
 
     private fun getLocationInfo(){
+        Log.d("checkk", "getLocationInfo Start")
         if(Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this@WeatherActivity, //SDK가 23 이상이고 위치권한이 없으면
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSION_REQUEST_CODE) //위치권한에 동의할 것인지 물어라
 
-        } else {
-            val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-
-            if(location != null) {
-                val latitude = location.latitude
-                val longitude = location.longitude
-                requestWeatherInfoOfLocation(latitude, longitude)
-                Log.d("please", "lat : $latitude log : $longitude")
-            } else {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    3000L,
-                    0F,
-                    this )
-                locationManager.removeUpdates(this)
-            }
         }
+
+        val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+        if(location != null) {
+            Log.d("checkk", "location is not null")
+            val latitude = location.latitude
+            val longitude = location.longitude
+            requestWeatherInfoOfLocation(latitude, longitude)
+            Log.d("checkk", "lat : $latitude log : $longitude")
+        }
+        else {
+            Log.d("checkk", "location is null")
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0L,
+                0F,
+                this ) //위 적힌 시간과 거리만큼 달라지면 위치를 다시 요청한다는 소리니깐 onLocationChanged함수가 실행 시작
+            locationManager.removeUpdates(this)
+        }
+
     }
 
 
     //Location 메소드들
 
     override fun onLocationChanged(location: Location?) {
+        Log.d("checkk", "location is changed")
         val lat = location?.latitude
         val lon = location?.longitude
         if(lat != null && lon != null){
             requestWeatherInfoOfLocation(lat, lon)
         }
 
-        Log.d("weathher", "2 $lat $lon")
+
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -108,15 +115,16 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     //요청 함수
 
     private fun requestWeatherInfoOfLocation(lat : Double, lon : Double){
+        Log.d("checkk", "start request method")
         (application as WeatherApplication)
             .requestService()
             ?.getweatherInfoOfCoordinates(lat, lon, APP_ID, UNITS)
             ?.enqueue(object : Callback<TotalWeather>{
                 override fun onFailure(call: Call<TotalWeather>, t: Throwable) {
-                    Log.d("fucking", "실패다 장애야")
+                    Log.d("checkk", "fail")
                 }
                 override fun onResponse(call: Call<TotalWeather>, response: Response<TotalWeather>) {
-
+                    Log.d("checkk","success")
                     if(response.isSuccessful){
                         val totalWeather = response.body()
                         totalWeather?.let {
