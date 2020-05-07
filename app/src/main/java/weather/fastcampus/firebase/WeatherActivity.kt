@@ -28,14 +28,22 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     private val PERMISSION_REQUEST_CODE = 2000
     private val APP_ID = "09c8dfc52b7541d33c528d09a55e2c18"
     private val UNITS = "metric"
+    private lateinit var backPressHandler: onBackPressHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
         Log.d("checkk", "Activity Start")
+
+        backPressHandler = onBackPressHandler(this)
+
         getLocationInfo()
 
         setting.setOnClickListener { startActivity(AccountSettingActivity::class.java) }
+    }
+
+    override fun onBackPressed() {
+        backPressHandler.onBackPressed()
     }
 
     //날씨 정보를 xml로 옮기는 함수
@@ -53,9 +61,9 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
                 it.description?.let { description.text = it }
             }
 
-            this.main?.temp_max?.let{current_max.text = it.toString()}
-            this.main?.temp?.let{current_temp.text = it.toString()}
-            this.main?.temp_min?.let{current_min.text = it.toString()}
+            this.main?.temp_max?.let{ current_max.text = String.format("%.1f", it)}
+            this.main?.temp?.let{ current_temp.text = String.format("%.1f", it)}
+            this.main?.temp_min?.let{current_min.text = String.format("%.1f", it)}
         }
     }
 
@@ -112,8 +120,6 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
         if(lat != null && lon != null){
             requestWeatherInfoOfLocation(lat, lon)
         }
-
-
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -149,6 +155,22 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
 
                 }
             })
+    }
+
+    inner class onBackPressHandler(var activity : Activity){
+        private var backPressHandler: Long = 0
+
+        fun onBackPressed(){
+            if(System.currentTimeMillis() > backPressHandler+2000){
+                backPressHandler = System.currentTimeMillis()
+                simpleToastShort("한번 더 누르시면 종료됩니다.", activity)
+                return
+            }
+            else{
+                finishAffinity()
+            }
+        }
+
     }
 
 }
