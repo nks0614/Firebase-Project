@@ -49,6 +49,8 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
             this.weatherList?.getOrNull(0)?.let {
                 val glide = Glide.with(this@WeatherActivity)
                 glide.load(Uri.parse("http://openweathermap.org/img/w/${it.icon}.png")).into(current_weather)
+
+                it.description?.let { description.text = it }
             }
 
             this.main?.temp_max?.let{current_max.text = it.toString()}

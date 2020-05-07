@@ -44,10 +44,22 @@
 
     <ImageView
         android:id="@+id/current_weather"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Load..."
         android:layout_marginBottom="16dp"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,42 +67,79 @@
         android:orientation="horizontal"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/current_min"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="32dp"
-            android:textColor="#0027FF"
-            android:textStyle="bold"/>
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/current_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="48dp"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:layout_marginLeft="48dp"
-            android:layout_marginRight="48dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:textColor="#0027FF"
+                android:text="lowest"/>
 
-        <TextView
-            android:id="@+id/current_max"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/current_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="32dp"
+                android:textColor="#0027FF"
+
+                android:text="wait"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="32dp"
-            android:textColor="#FF0000"
-            android:textStyle="bold"/>
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:textColor="#000000"
+                android:text="now"/>
+
+            <TextView
+                android:id="@+id/current_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="48dp"
+                android:textColor="#000000"
+                android:text="a"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:textColor="#FF0000"
+                android:text="highest"/>
+
+            <TextView
+                android:id="@+id/current_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="32dp"
+                android:textColor="#FF0000"
+                android:text="min"/>
+            </LinearLayout>
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textSize="32dp"
-        android:gravity="center"
-        android:padding="32dp"/>
 
 
 </LinearLayout>
