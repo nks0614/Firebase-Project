@@ -1,6 +1,7 @@
 package weather.fastcampus.firebase
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,9 +12,11 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_weather.*
@@ -29,43 +32,48 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     private val APP_ID = "09c8dfc52b7541d33c528d09a55e2c18"
     private val UNITS = "metric"
     private lateinit var backPressHandler: onBackPressHandler
+    var itemList = arrayListOf<item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
+
         Log.d("checkk", "Activity Start")
 
         backPressHandler = onBackPressHandler(this)
+
+        addItem()
+
+        Log.d("checkkitem","$itemList")
+
 
         getLocationInfo()
 
         setting.setOnClickListener { startActivity(AccountSettingActivity::class.java) }
     }
 
+    private fun addItem(){
+        requestCityWeather("pohang")
+        requestCityWeather("daegu")
+        requestCityWeather("seoul")
+        requestCityWeather("incheon")
+        Log.d("checkkitem", "$itemList")
+    }
+
+    private fun rcView(){
+        val rcAdapter = RcViewAdapter(this, itemList)
+        rcView.adapter = rcAdapter
+
+        val lm = LinearLayoutManager(this)
+        rcView.layoutManager = lm
+        rcView.setHasFixedSize(true)
+    }
+
     override fun onBackPressed() {
         backPressHandler.onBackPressed()
     }
 
-    //날씨 정보를 xml로 옮기는 함수
-    private fun drawWeather(weather : TotalWeather){
-        Log.d("checkk", "start drawWeather method")
-        with(weather){
 
-
-            //http://openweathermap.org/img/w/10d.png
-
-            this.weatherList?.getOrNull(0)?.let {
-                val glide = Glide.with(this@WeatherActivity)
-                glide.load(Uri.parse("http://openweathermap.org/img/w/${it.icon}.png")).into(current_weather)
-
-                it.description?.let { description.text = it }
-            }
-
-            this.main?.temp_max?.let{ current_max.text = String.format("%.1f", it)}
-            this.main?.temp?.let{ current_temp.text = String.format("%.1f", it)}
-            this.main?.temp_min?.let{current_min.text = String.format("%.1f", it)}
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -90,6 +98,13 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
 
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            //GPS 설정화면으로 이동
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            startActivity(intent)
+        }
 
         if(location != null) {
             Log.d("checkk", "location is not null")
@@ -156,6 +171,63 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
                 }
             })
     }
+
+    //날씨 정보를 xml로 옮기는 함수
+    private fun drawWeather(weather : TotalWeather){
+        Log.d("checkk", "start drawWeather method")
+        with(weather){
+
+
+            //http://openweathermap.org/img/w/10d.png
+
+            this.weatherList?.getOrNull(0)?.let {
+                val glide = Glide.with(this@WeatherActivity)
+                glide.load(Uri.parse("http://openweathermap.org/img/w/${it.icon}.png")).into(current_weather)
+
+                it.description?.let { description.text = it }
+            }
+
+            this.main?.temp_max?.let{ current_max.text = String.format("%.1f", it)}
+            this.main?.temp?.let{ current_temp.text = String.format("%.1f", it)}
+            this.main?.temp_min?.let{current_min.text = String.format("%.1f", it)}
+        }
+    }
+
+    private fun requestCityWeather(city:String){
+        (application as WeatherApplication)
+            .requestService()
+            ?.getWeatherInfoOfLocation(city, APP_ID, UNITS)
+            ?.enqueue(object : Callback<TotalWeather> {
+                override fun onFailure(call: Call<TotalWeather>, t: Throwable) {
+                    Log.d("checkk","fail")
+                }
+
+                override fun onResponse(call: Call<TotalWeather>, response: Response<TotalWeather>) {
+                    if(response.isSuccessful){
+                        val weather = response.body()
+                        weather?.let {
+                            drawLocationWeather(it,city)
+                        }
+                    }
+                }
+            })
+    }
+
+    private fun drawLocationWeather(weather : TotalWeather, city:String){
+        with(weather){
+            val temp = this.main?.temp.toString()
+
+            val item = item("",city, temp.format("%.1f"))
+
+            itemList.add(item)
+
+            Log.d("checkkitem","$itemList")
+
+            rcView()
+        }
+    }
+
+
 
     inner class onBackPressHandler(var activity : Activity){
         private var backPressHandler: Long = 0
