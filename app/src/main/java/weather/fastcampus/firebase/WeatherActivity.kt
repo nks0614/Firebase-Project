@@ -34,6 +34,9 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     private lateinit var backPressHandler: onBackPressHandler
     var itemList = arrayListOf<item>()
 
+    val rcAdapter = RcViewAdapter(this, itemList)
+    val lm = LinearLayoutManager(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
@@ -41,6 +44,10 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
         Log.d("checkk", "Activity Start")
 
         backPressHandler = onBackPressHandler(this)
+
+        rcView.adapter = rcAdapter
+        rcView.layoutManager = lm
+        rcView.setHasFixedSize(true)
 
         addItem()
 
@@ -60,14 +67,9 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
         Log.d("checkkitem", "$itemList")
     }
 
-    private fun rcView(){
-        val rcAdapter = RcViewAdapter(this, itemList)
-        rcView.adapter = rcAdapter
 
-        val lm = LinearLayoutManager(this)
-        rcView.layoutManager = lm
-        rcView.setHasFixedSize(true)
-    }
+
+
 
     override fun onBackPressed() {
         backPressHandler.onBackPressed()
@@ -220,10 +222,10 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
             val item = item("",city, temp.format("%.1f"))
 
             itemList.add(item)
+            rcAdapter.notifyDataSetChanged()
 
             Log.d("checkkitem","$itemList")
 
-            rcView()
         }
     }
 
